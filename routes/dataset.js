@@ -16,7 +16,18 @@ console.log("DATASET DIR: " + DATASET_DIR);
 
 router.get('/', function(req, res, next) {
 	fs.readdir(DATASET_DIR, function(error, files){
-		res.send(files);
+		filteredFiles = files.filter((file)=>{
+			var extension = file.toLowerCase().substr(file.lastIndexOf('.'));
+			switch(extension){
+				case '.jpg':
+				case '.png':
+				case '.gif':
+					return true;
+				default:
+					return false;
+			}
+		});
+		res.send(filteredFiles);
 	});  
 });
 
@@ -53,7 +64,7 @@ router.get('/mark', function(req, res, next) {
 	try {
 		fs.accessSync(filePath, fs.constants.F_OK, fs.constants.R_OK);
 	} catch(err){
-		var content = '{"name":"' + values.name + '", "classes":["label"], "regions":[]}';
+		var content = '{"name":"' + values.name + '", "regions":{}}';
 		fs.writeFileSync(filePath, content, {'encoding':'utf8', 'flag':'wx+'});
 	}
 

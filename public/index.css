@@ -73,3 +73,39 @@ body * {
 			  user-select: none; /* Non-prefixed version, currently
 									supported by Chrome and Opera */
   }
+
+
+#image-detail-container .nameContainer{
+	background-color:cornflowerblue;
+	color:white;
+	font-weight:bold;
+	font-size:14px;
+	padding:8px;
+}
+
+#image-detail-container .regionsContainer{
+	margin-left:8px;
+}
+#image-detail-container .regionContainer{
+	margin-left:8px;
+}
+#image-detail-container .regionContainer .key{
+	background-color:rgb(151, 186, 252);
+	color:white;
+	font-weight:bold;
+	font-size:14px;
+	padding:8px;
+}
+#image-detail-container .regionContainer .values{
+	margin-left:8px;
+}
+#image-detail-container .regionContainer .values .value{
+	background-color:rgb(177, 203, 252);
+	color:white;
+	font-weight:bold;
+	font-size:14px;
+	padding:8px;
+	border-bottom:1px dotted white;
+}
+
+
