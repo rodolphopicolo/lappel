@@ -11,6 +11,7 @@ var router = express.Router();
 // var DATASET_DIR = '/mnt/sda6-home-sda5/rodolpho/dev/mine/projeto-aplicado/dataset';
 // var DATASET_DIR = '/home/rodolpho/dev/mine/lappel/dataset';
 var DATASET_DIR = path.join(__dirname, '../../dataset-fake');
+// var DATASET_DIR = path.join(__dirname, '../../dataset');
 
 console.log("DATASET DIR: " + DATASET_DIR);
 

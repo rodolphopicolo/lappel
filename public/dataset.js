@@ -33,6 +33,17 @@ Dataset = {
 		imageContainer.innerHTML = '';
 
 		var img = document.createElement('img');
+		imageContainer.canvas = document.createElement('canvas');
+		imageContainer.rulesCanvas = document.createElement('canvas');
+		imageContainer.rulesCanvas.className='rules';
+		Canvas.canvas = imageContainer.canvas;
+		Canvas.canvasRules = imageContainer.rulesCanvas;
+		imageContainer.canvas.addEventListener('click', Canvas.click);
+		imageContainer.canvas.addEventListener('mousemove', Canvas.mouseMove);
+		imageContainer.canvas.addEventListener('mouseout', Canvas.mouseOut);
+
+
+
 		img.src = '/dataset/sample?name=' + imageName ;
 		img.onload = function(){
 			console.log(this.width + ',' + this.height);
@@ -53,13 +64,18 @@ Dataset = {
 			img.style.width = newImageWidth + 'px';
 			img.style.height = newImageHeight + 'px';
 
+			imageContainer.canvas.width = newImageWidth;
+			imageContainer.canvas.height = newImageHeight;
+
+			imageContainer.rulesCanvas.width = newImageWidth;
+			imageContainer.rulesCanvas.height = newImageHeight;
+
 			console.log(this.width + ',' + this.height);
 			Dataset.loadMetaInfo(imageName);
 		};
 		imageContainer.appendChild(img);
-		// imageContainer.canvas = document.createElement('canvas');
-		// imageContainer.appendChild(imageContainer.canvas);
-
+		imageContainer.appendChild(imageContainer.canvas);
+		imageContainer.appendChild(imageContainer.rulesCanvas);
 
 		// imageContainer.style.backgroundImage = 'url("/dataset/sample?name=' + imageName + '")';
 	}
