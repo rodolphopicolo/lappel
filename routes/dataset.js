@@ -101,7 +101,8 @@ router.get('/mark/new', function(req, res){
 	var json = fs.readFileSync(filePath, {"encoding":"utf8"});
 	json = JSON.parse(json);
 	var regions = json['regions'];
-	var keys = Object.keys(regions).sort();
+	var keys = Object.keys(regions);
+	keys = keys.map((key)=>{return +key}).sort((v1, v2)=>{return +v1 - +v2;});
 	var newKey = 0;
 	if(keys.length > 0){
 		var lastKey = keys[keys.length - 1];

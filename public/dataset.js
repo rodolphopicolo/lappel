@@ -75,6 +75,7 @@ Dataset = {
 
 			Dataset.loadMetaInfo(imageName);
 			Dataset.imageName = imageName;
+			Dataset.new();
 		};
 		imageContainer.appendChild(img);
 		imageContainer.appendChild(imageContainer.canvasRegions);
@@ -94,39 +95,50 @@ Dataset = {
 				container.innerHTML = '';
 
 				var imageName = json['name'];
-				// var clazz = json['classe'];
 				var regions = json['regions'];
 
 				var nameContainer = document.createElement('div');
-				// var clazzContainer = document.createElement('div');
 				var regionsContainer = document.createElement('div');
 				nameContainer.className = 'nameContainer';
-				// clazzContainer.className = 'classContainer';
 				regionsContainer.className = 'regionsContainer';
 				container.appendChild(nameContainer);
-				// container.appendChild(clazzContainer);
 				container.appendChild(regionsContainer);
 
 				nameContainer.innerHTML = imageName;
-				// clazzContainer.innerHTML = clazz;
 
-				for(var key in regions){
+				var keys = Object.keys(regions);
+				keys.sort((v1, v2)=>{return +v2 - +v1});
+
+				for(var i = 0; i < keys.length; i++){
+					var key = keys[i];
 					var region = regions[key];
 					var regionContainer = document.createElement('div');
 					regionContainer.className = 'regionContainer';
 					regionsContainer.appendChild(regionContainer);
 
 					var keyContainer = document.createElement('div');
-					keyContainer.className='key';
-					keyContainer.innerHTML = key;
+					keyContainer.className='key-container';
+
+					var spanKey = document.createElement('span');
+					spanKey.innerHTML = key;
+
+					var deleteButton = document.createElement('button');
+					deleteButton.type = 'button';
+					deleteButton.innerHTML = 'delete';
+
+					deleteButton.addEventListener('click', function(key){return function(){Dataset.delete(key)}}(key));
+
+
+					keyContainer.appendChild(spanKey);
+					keyContainer.appendChild(deleteButton);
 
 					var valuesContainer = document.createElement('div');
 					valuesContainer.className='values';
 					
-					for(var i = 0; i < region.length; i++){
+					for(var j = 0; j < region.length; j++){
 						var valueContainer = document.createElement('div');
 						valueContainer.className = 'value';
-						valueContainer.innerHTML = region[i];
+						valueContainer.innerHTML = region[j];
 						valuesContainer.appendChild(valueContainer);
 					}
 
@@ -156,6 +168,9 @@ Dataset = {
 		pointContainer.innerHTML = point;
 		container.appendChild(pointContainer);
 		Dataset.drawEdition(Dataset.points);
+		if(Dataset.points.length == 4){
+			Dataset.save();
+		}
 	}
 
 	, new: function(){
@@ -185,8 +200,26 @@ Dataset = {
 				console.log(message);
 				throw message;
 			}
+			document.getElementById('new-region-container').innerHTML = '';
+			Dataset.loadMetaInfo(Dataset.imageName);
+			Dataset.new();
 			console.log('pontos salvos com sucesso');
 
+		}).catch(function(err){
+			console.log(err); throw err;
+		});
+	}
+
+	, delete: function(key){
+		var url = '/dataset/mark/delete?name=' + Dataset.imageName + '&region=' + key;
+		console.log(url);
+		fetch(url).then(function(response){
+			if(!response.ok){
+				var message = 'Erro ao excluir região';
+				console.log(message);
+				throw message;
+			}
+			Dataset.loadMetaInfo(Dataset.imageName);
 		}).catch(function(err){
 			console.log(err); throw err;
 		});
