@@ -1,5 +1,11 @@
 Dataset = {
-	getAllImagesNames: function(){
+
+	points:[]
+
+	, imageName: null
+	, editing: false
+
+	, getAllImagesNames: function(){
 		fetch('/dataset').then(function(response){
 			if(!response.ok){
 				console.log('Network response was not ok.');
@@ -24,29 +30,26 @@ Dataset = {
 	}
 
 	, loadImage: function(imageName){
-		console.log(imageName);
+		Dataset.imageName = null;
 		var detailContainer = document.getElementById('image-detail-container');
 		var imageContainer = document.getElementById('image-container');
-		// var img = document.getElementById('image');
-		// var canvas = document.getElementById('canvas');
-		
+
 		imageContainer.innerHTML = '';
 
 		var img = document.createElement('img');
-		imageContainer.canvas = document.createElement('canvas');
-		imageContainer.rulesCanvas = document.createElement('canvas');
-		imageContainer.rulesCanvas.className='rules';
-		Canvas.canvas = imageContainer.canvas;
-		Canvas.canvasRules = imageContainer.rulesCanvas;
-		imageContainer.canvas.addEventListener('click', Canvas.click);
-		imageContainer.canvas.addEventListener('mousemove', Canvas.mouseMove);
-		imageContainer.canvas.addEventListener('mouseout', Canvas.mouseOut);
+		imageContainer.canvasRegions = document.createElement('canvas');
+		imageContainer.canvasRules = document.createElement('canvas');
+		imageContainer.canvasRules.className='rules';
+		Canvas.canvasRegions = imageContainer.canvasRegions;
+		Canvas.canvasRules = imageContainer.canvasRules;
+		imageContainer.canvasRegions.addEventListener('click', Canvas.click);
+		imageContainer.canvasRegions.addEventListener('mousemove', Canvas.mouseMove);
+		imageContainer.canvasRegions.addEventListener('mouseout', Canvas.mouseOut);
 
 
 
 		img.src = '/dataset/sample?name=' + imageName ;
 		img.onload = function(){
-			console.log(this.width + ',' + this.height);
 			var containerHeight = imageContainer.offsetHeight;
 			var containerWidth = imageContainer.offsetWidth;
 
@@ -64,18 +67,18 @@ Dataset = {
 			img.style.width = newImageWidth + 'px';
 			img.style.height = newImageHeight + 'px';
 
-			imageContainer.canvas.width = newImageWidth;
-			imageContainer.canvas.height = newImageHeight;
+			imageContainer.canvasRegions.width = newImageWidth;
+			imageContainer.canvasRegions.height = newImageHeight;
 
-			imageContainer.rulesCanvas.width = newImageWidth;
-			imageContainer.rulesCanvas.height = newImageHeight;
+			imageContainer.canvasRules.width = newImageWidth;
+			imageContainer.canvasRules.height = newImageHeight;
 
-			console.log(this.width + ',' + this.height);
 			Dataset.loadMetaInfo(imageName);
+			Dataset.imageName = imageName;
 		};
 		imageContainer.appendChild(img);
-		imageContainer.appendChild(imageContainer.canvas);
-		imageContainer.appendChild(imageContainer.rulesCanvas);
+		imageContainer.appendChild(imageContainer.canvasRegions);
+		imageContainer.appendChild(imageContainer.canvasRules);
 
 		// imageContainer.style.backgroundImage = 'url("/dataset/sample?name=' + imageName + '")';
 	}
@@ -139,6 +142,58 @@ Dataset = {
 		}).catch(function(err){
 			console.log(err)
 		});
+	}
+
+	, click: function(fracX, fracY){
+		if(Dataset.editing != true){
+			return;
+		}
+		var point = [fracX, fracY];
+		Dataset.points.push(point);
+		var container = document.getElementById('new-region-container');
+		var pointContainer = document.createElement('div');
+		pointContainer.className = 'point-container';
+		pointContainer.innerHTML = point;
+		container.appendChild(pointContainer);
+		Dataset.drawEdition(Dataset.points);
+	}
+
+	, new: function(){
+		Dataset.editing = true;
+		Dataset.points = [];
+		document.getElementById('new-region-container').innerHTML = '';
+		Dataset.drawEdition(Dataset.points);
+	}
+
+	, save: function(){
+		Dataset.editing = false;
+
+		var encodedPoints = '';
+		for(var i = 0; i < Dataset.points.length; i++){
+			var point = Dataset.points[i];
+			if (i > 0){
+				encodedPoints += '+';
+			}
+			encodedPoints += point[0] + ',' + point[1];
+		}
+
+		var url = '/dataset/mark/new?name=' + Dataset.imageName + '&points=' + encodedPoints;
+		console.log(url);
+		fetch(url).then(function(response){
+			if(!response.ok){
+				var message = 'Erro ao salvar os pontos';
+				console.log(message);
+				throw message;
+			}
+			console.log('pontos salvos com sucesso');
+
+		}).catch(function(err){
+			console.log(err); throw err;
+		});
+	}
+
+	, drawEdition: function(){
+		Canvas.drawPoints(Dataset.points);
 	}
 }
 

@@ -1,29 +1,31 @@
 Canvas = {
 
-    canvas: null
+    canvasRegions: null
     , canvasRules: null
 
     , click: function(evt){
-        // Canvas.drawRules(evt.layerX, evt.layerY);
+        var x = evt.layerX;
+        var y = evt.layerY;
+		var fracX = +('0.' + Math.round((x / Canvas.canvasRegions.width) * 10000));
+		var fracY = +('0.' + Math.round((y / Canvas.canvasRegions.height) * 10000));
+
+        Dataset.click(fracX, fracY);
     }
     , mouseMove: function(evt){
-        console.log('mouseMove:' + Canvas.canvas);
-        console.log(evt);
         Canvas.drawRules(evt.layerX, evt.layerY);
     }
     , mouseOut: function(evt){
-        console.log('mouseOut:' + Canvas.canvas);
+
     }
 
     , drawRules: function(x, y){
         if(x > Canvas.canvasRules.width){
-            return;
+            x = Canvas.canvasRules.width;
         }
         if(y > Canvas.canvasRules.height){
-            return;
+            y = Canvas.canvasRules.height;
         }
 
-        console.log('click:' + x + ', ' + y);
         var context = Canvas.canvasRules.getContext('2d');
 
         context.clearRect(0, 0, Canvas.canvasRules.width, Canvas.canvasRules.height);
@@ -36,6 +38,10 @@ Canvas = {
         context.lineTo(x, Canvas.canvasRules.height);
 
         context.stroke();
+
+    }
+
+    , drawPoints: function(points){
 
     }
 }

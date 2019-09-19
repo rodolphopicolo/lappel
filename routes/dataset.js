@@ -48,7 +48,7 @@ router.get('/sample', function(req, res, next) {
 	readStream.pipe(res);
 });
 
-router.get('/mark', function(req, res, next) {
+router.get('/mark', function(req, res) {
 	var q = url.parse(req.url);
 	var search = q.search.substring(1);
 	var values = querystring.parse(search);
@@ -72,6 +72,75 @@ router.get('/mark', function(req, res, next) {
 	res.writeHead(200, {'Content-Type': 'application/json'});
 	var readStream = fs.createReadStream(filePath);
 	readStream.pipe(res);
+});
+
+router.get('/mark/new', function(req, res){
+	var q = url.parse(req.url);
+	var search = q.search.substring(1);
+	var values = querystring.parse(search);
+	var imageFileName = values.name;
+	var points = values.points + '';
+
+	if(!imageFileName){
+		throw 'Nome de arquivo inválido';
+	}
+	if(!points){
+		throw 'Pontos inválidos';
+	}
+
+	points = points.trim();
+	while(points.indexOf(' ') >= 0){
+		points = points.replace(' ', '],[');
+	}
+	points = '[[' + points + ']]';
+	var newPoints = JSON.parse(points);
+	
+	var fileName = imageFileName + '.json';
+	filePath = path.join(DATASET_DIR, fileName);
+
+	var json = fs.readFileSync(filePath, {"encoding":"utf8"});
+	json = JSON.parse(json);
+	var regions = json['regions'];
+	var keys = Object.keys(regions).sort();
+	var newKey = 0;
+	if(keys.length > 0){
+		var lastKey = keys[keys.length - 1];
+		newKey = +lastKey + 1
+	}
+	regions[newKey] = newPoints;
+	
+	var content = JSON.stringify(json);
+	fs.writeFileSync(filePath, content, {'encoding':'utf8', 'flag':'w'});
+
+	res.send(json);
+});
+
+router.get('/mark/delete', function(req, res){
+	var q = url.parse(req.url);
+	var search = q.search.substring(1);
+	var values = querystring.parse(search);
+	var imageFileName = values.name;
+	var regionKey = values.region + '';
+
+	if(!imageFileName){
+		throw 'Nome de arquivo inválido';
+	}
+	if(!regionKey){
+		throw 'Nome da região inválida';
+	}
+
+	var fileName = imageFileName + '.json';
+	filePath = path.join(DATASET_DIR, fileName);
+
+	var json = fs.readFileSync(filePath, {"encoding":"utf8"});
+	json = JSON.parse(json);
+	var regions = json['regions'];
+	delete regions[regionKey];
+	
+	var content = JSON.stringify(json);
+	fs.writeFileSync(filePath, content, {'encoding':'utf8', 'flag':'w'});
+
+	res.send(json);
 });
 
 module.exports = router;

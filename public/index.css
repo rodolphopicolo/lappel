@@ -18,7 +18,47 @@ body * {
 	background-color:#f0f0f0;
 }
 
-#image-detail-container {
+#control-container {
+	margin-bottom:16px;
+}
+
+#control-container .header {
+	background-color:rgb(44, 106, 221);
+	padding:8px;
+	display:flex;
+	flex-direction:row;
+	line-height: 35px;
+}
+
+#control-container .header .title {
+	color:white;
+	font-weight:bold;
+	font-size:14px;
+	flex:1;
+}
+
+#control-container .header button {
+    background-color: #4090db;
+    border-color: #4090db;
+    color: #fff;
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px;
+	width: 48px;
+	margin-left:8px;
+	cursor:pointer;
+}
+
+#new-region-container .point-container {
+	background-color:rgb(177, 203, 252);
+	color:white;
+	font-weight:bold;
+	font-size:11px;
+	padding:4px;
+	border-bottom:1px dotted white;
+}
+
+#detail-container {
 	flex-basis:256px;
 	background-color:#f8f8f8;
 }
@@ -36,7 +76,6 @@ body * {
 
 #image-container img {
 	position:absolute;
-	background-color:yellow;
 	z-index:1;
 }
 
