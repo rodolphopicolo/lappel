@@ -8,15 +8,21 @@ var router = express.Router();
 
  var fs = require('fs')
 
-// var DATASET_DIR = '/mnt/sda6-home-sda5/rodolpho/dev/mine/projeto-aplicado/dataset';
-// var DATASET_DIR = '/home/rodolpho/dev/mine/lappel/dataset';
-var DATASET_DIR = path.join(__dirname, '../../dataset-fake');
-// var DATASET_DIR = path.join(__dirname, '../../dataset');
+var DATASET_DIR = path.join(__dirname, '../../dataset');
 
 console.log("DATASET DIR: " + DATASET_DIR);
 
+router.get('/path', function(req, res, next) {
+	res.send(DATASET_DIR);
+});
+
 router.get('/', function(req, res, next) {
 	fs.readdir(DATASET_DIR, function(error, files){
+		if(files == null){
+			res.statusMessage = "Diretório de imagens vazio. Por convenção, o diretório de imagens é um diretório chamado dataset e fica no mesmo diretório do diretório desta aplicação. Nesta instalação as imagens devem ficar em: " + DATASET_DIR;
+			res.status(400).end();
+			return;
+		}
 		filteredFiles = files.filter((file)=>{
 			var extension = file.toLowerCase().substr(file.lastIndexOf('.'));
 			switch(extension){

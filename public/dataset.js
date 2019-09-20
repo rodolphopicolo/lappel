@@ -8,7 +8,9 @@ Dataset = {
 	, getAllImagesNames: function(){
 		fetch('/dataset').then(function(response){
 			if(!response.ok){
-				console.log('Network response was not ok.');
+				var container = document.getElementById('image-container');
+				container.innerHTML = response.statusText;
+				console.log('Falha na obtenção dos nomes das imagens');
 				return;
 			}
 			response.json().then(function(json){
@@ -87,7 +89,7 @@ Dataset = {
 	, loadMetaInfo: function(imageName){
 		fetch('/dataset/mark?name=' + imageName).then(function(response){
 			if(!response.ok){
-				console.log('Network response was not ok.');
+				console.log('Falha na obtenção da meta informação da image');
 				return;
 			}
 			response.json().then(function(json){
@@ -95,7 +97,7 @@ Dataset = {
 				container.innerHTML = '';
 
 				var imageName = json['name'];
-				var regions = json['regions'];
+				Dataset.regions = json['regions'];
 
 				var nameContainer = document.createElement('div');
 				var regionsContainer = document.createElement('div');
@@ -106,12 +108,12 @@ Dataset = {
 
 				nameContainer.innerHTML = imageName;
 
-				var keys = Object.keys(regions);
+				var keys = Object.keys(Dataset.regions);
 				keys.sort((v1, v2)=>{return +v2 - +v1});
 
 				for(var i = 0; i < keys.length; i++){
 					var key = keys[i];
-					var region = regions[key];
+					var region = Dataset.regions[key];
 					var regionContainer = document.createElement('div');
 					regionContainer.className = 'regionContainer';
 					regionsContainer.appendChild(regionContainer);
@@ -145,11 +147,8 @@ Dataset = {
 					regionContainer.appendChild(keyContainer);
 					regionContainer.appendChild(valuesContainer);
 				}
+				Canvas.drawRegions(Dataset.regions);
 
-
-				
-
-				
 			});
 		}).catch(function(err){
 			console.log(err)
@@ -226,7 +225,7 @@ Dataset = {
 	}
 
 	, drawEdition: function(){
-		Canvas.drawPoints(Dataset.points);
+		Canvas.drawRegion(Dataset.points);
 	}
 }
 
