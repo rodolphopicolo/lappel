@@ -3,6 +3,7 @@ var url = require('url');
 var querystring = require('querystring');
 var path = require('path');
 var fs = require('fs');
+var sizeOf = require('image-size');
 
 var router = express.Router();
 
@@ -143,6 +144,38 @@ router.get('/mark/delete', function(req, res){
 	json = JSON.parse(json);
 	var regions = json['regions'];
 	delete regions[regionKey];
+	
+	var content = JSON.stringify(json);
+	fs.writeFileSync(filePath, content, {'encoding':'utf8', 'flag':'w'});
+
+	res.send(json);
+});
+
+
+router.get('/mark/dimensions', function(req, res){
+	var q = url.parse(req.url);
+	var search = q.search.substring(1);
+	var values = querystring.parse(search);
+	var imageFileName = values.name;
+
+	if(!imageFileName){
+		throw 'Nome de arquivo inválido';
+	}
+	
+	var fileName = imageFileName + '.json';
+	filePath = path.join(DATASET_DIR, fileName);
+	imagePath = path.join(DATASET_DIR, imageFileName);
+
+	var json = fs.readFileSync(filePath, {"encoding":"utf8"});
+	json = JSON.parse(json);
+
+	if(json['dimensions'] == null || json['dimensions']['width'] == null || json['dimensions']['height'] == null){
+		var dimensions = sizeOf(imagePath);
+		json['dimensions'] = {
+			width: dimensions.width
+			, height: dimensions.height
+		};	
+	}
 	
 	var content = JSON.stringify(json);
 	fs.writeFileSync(filePath, content, {'encoding':'utf8', 'flag':'w'});

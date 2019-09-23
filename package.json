@@ -10,6 +10,7 @@
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "image-size": "^0.8.1",
     "morgan": "~1.9.1",
     "reload": "^3.0.1",
     "supervisor": "^0.12.0"
